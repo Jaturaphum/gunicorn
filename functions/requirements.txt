@@ -1,3 +1,0 @@
-firebase-functions>=0.1.0
-firebase-admin
-flask
