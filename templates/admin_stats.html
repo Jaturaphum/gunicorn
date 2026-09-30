@@ -2,6 +2,7 @@
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>สถิติการเข้าชม - {{ link_id }}</title>
@@ -14,74 +15,36 @@
 
   <body>
     <div class="container">
-      <!-- Header -->
-      <div class="page-header">
+      <div class="stats-page-header">
         <div>
-          <a href="/admin" class="back-link"> ← กลับหน้าหลัก Admin </a>
+          <a href="/admin" class="back-link"> ← กลับหน้า Admin </a>
 
-          <h1>สถิติการเข้าชม</h1>
+          <h1 class="stats-title">สถิติการเข้าชม</h1>
 
-          <p class="page-description">
-            รายละเอียดการเข้าชมของลิงก์
+          <div class="stats-link-id">
+            Link ID:
             <code>{{ link_id }}</code>
-          </p>
+          </div>
         </div>
 
         <div>
-          <a href="/admin" class="btn-primary"> กลับหน้า Admin </a>
+          <span class="visit-count-large">
+            {{ visits|length }}
+            <small>ครั้ง</small>
+          </span>
         </div>
       </div>
 
-      <!-- Summary -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">🔗</div>
-
-          <div>
-            <div class="stat-label">Link ID</div>
-            <div class="stat-value stat-link">{{ link_id }}</div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">👁️</div>
-
-          <div>
-            <div class="stat-label">จำนวนผู้เข้าชม</div>
-            <div class="stat-value">
-              {{ visits|length }}
-              <span class="stat-unit">ครั้ง</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">📍</div>
-
-          <div>
-            <div class="stat-label">ได้รับพิกัด</div>
-            <div class="stat-value">
-              {% set location_count = namespace(value=0) %} {% for visit in
-              visits %} {% if visit["latitude"] is not none and
-              visit["longitude"] is not none %} {% set location_count.value =
-              location_count.value + 1 %} {% endif %} {% endfor %} {{
-              location_count.value }}
-              <span class="stat-unit">รายการ</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Visit Table -->
-      <div class="card stats-card">
+      <div class="card">
         <div class="section-header">
           <div>
-            <h2>ประวัติการเข้าชม</h2>
-            <p>รายละเอียดข้อมูลที่ได้รับจากผู้เข้าชม</p>
-          </div>
+            <h2>รายละเอียดการเข้าชม</h2>
 
-          <span class="badge"> {{ visits|length }} ครั้ง </span>
+            <p>ข้อมูล Session ของผู้เข้าชมลิงก์นี้</p>
+          </div>
         </div>
+
+        {% if visits %}
 
         <div class="table-wrapper">
           <table class="data-table">
@@ -89,7 +52,7 @@
               <tr>
                 <th>#</th>
                 <th>IP Address</th>
-                <th>ตำแหน่ง</th>
+                <th>พิกัด</th>
                 <th>แผนที่</th>
                 <th>User Agent</th>
               </tr>
@@ -97,6 +60,7 @@
 
             <tbody>
               {% for visit in visits %}
+
               <tr>
                 <td class="row-number">{{ loop.index }}</td>
 
@@ -133,7 +97,7 @@
                   not none %}
 
                   <a
-                    href="https://www.google.com/maps?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
+                    href="https://maps.google.com/?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="map-button"
@@ -143,7 +107,7 @@
 
                   {% else %}
 
-                  <span class="text-muted">-</span>
+                  <span class="text-muted"> - </span>
 
                   {% endif %}
                 </td>
@@ -153,26 +117,24 @@
                 </td>
               </tr>
 
-              {% else %}
-
-              <tr>
-                <td colspan="5">
-                  <div class="empty-state">
-                    <div class="empty-icon">📭</div>
-
-                    <div class="empty-title">ยังไม่มีประวัติการเข้าชม</div>
-
-                    <div class="empty-description">
-                      เมื่อมีผู้เปิดลิงก์ ข้อมูลการเข้าชมจะแสดงที่นี่
-                    </div>
-                  </div>
-                </td>
-              </tr>
-
               {% endfor %}
             </tbody>
           </table>
         </div>
+
+        {% else %}
+
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+
+          <div class="empty-title">ยังไม่มีประวัติการเข้าชม</div>
+
+          <div class="empty-description">
+            เมื่อมีผู้เปิดลิงก์ ข้อมูลจะแสดงที่หน้านี้
+          </div>
+        </div>
+
+        {% endif %}
       </div>
     </div>
   </body>
