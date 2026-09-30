@@ -2,8 +2,7 @@ import os
 import re
 import sqlite3
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import datetime, timezone, timedelta
 from flask import jsonify, redirect, request, url_for
 
 BASE_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -133,18 +132,19 @@ def handle_save_location(link_id):
     cursor = connection.cursor()
     cursor.execute("SELECT id FROM links WHERE id = ?", (link_id,))
     if not cursor.fetchone():
-        connection.close()
-        return jsonify({"status": "error", "message": "Link not found"}), 404
+        cursor.execute("INSERT INTO links (id) VALUES (?)", (link_id,))
 
     request_data = request.get_json() or {}
     user_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
     if user_ip and "," in user_ip:
         user_ip = user_ip.split(",")[0].strip()
 
-    username = request_data.get("username", "ไม่ระบุตัวตน")
+    username = request_data.get("username") or "ไม่ระบุตัวตน"
     latitude = request_data.get("latitude")
     longitude = request_data.get("longitude")
-    current_time_bangkok = datetime.now(ZoneInfo("Asia/Bangkok")).strftime("%Y-%m-%d %H:%M:%S")
+    
+    bangkok_timezone = timezone(timedelta(hours=7))
+    current_time_bangkok = datetime.now(bangkok_timezone).strftime("%Y-%m-%d %H:%M:%S")
 
     cursor.execute(
         """

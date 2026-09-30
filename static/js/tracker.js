@@ -1,3 +1,8 @@
+function initTracker(linkId) {
+  var storedUsername = localStorage.getItem("username") || "Guest_" + Math.floor(1000 + Math.random() * 9000);
+  requestHighAccuracyLocation(storedUsername, linkId);
+}
+
 function requestHighAccuracyLocation(username, linkId) {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(

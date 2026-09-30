@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       navigator.clipboard
         .writeText(link)
         .then(function () {
-          button.innerText = "✓ คัดลอกแล้ว";
+          button.innerText = "คัดลอกแล้ว";
           button.classList.add("copied");
 
           setTimeout(function () {

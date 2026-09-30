@@ -9,6 +9,7 @@ venv\Scripts\activate
 
 Step 3: ติดตั้ง Packages ที่จำเป็นทั้งหมดลง venv ใหม่
 python -m pip install flask requests
+python -m pip install -r requirements.txt
 
 สั่งรันโปรแกรม:
 สำหรับ Development / ทดสอบระบบ (รันปกติ):
