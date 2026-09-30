@@ -3,8 +3,8 @@ import re
 import sqlite3
 import uuid
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from flask import jsonify, redirect, request, url_for
-import requests
 
 BASE_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(BASE_DIRECTORY, "database.db")
@@ -32,14 +32,6 @@ def init_db():
         )
         """
     )
-    try:
-        cursor.execute("ALTER TABLE visits ADD COLUMN username TEXT")
-    except sqlite3.OperationalError:
-        pass
-    try:
-        cursor.execute("ALTER TABLE visits ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    except sqlite3.OperationalError:
-        pass
     connection.commit()
     connection.close()
 
@@ -54,21 +46,6 @@ def parse_user_agent(user_agent_string):
     for key, value in tokens:
         parsed_data[key] = value
     return parsed_data
-
-def get_location_from_ip(ip_address):
-    if (
-        not ip_address
-        or ip_address in ["127.0.0.1", "localhost"]
-        or ip_address.startswith(("10.", "172.", "192.168."))
-    ):
-        return None, None
-    try:
-        response = requests.get(f"http://ip-api.com/json/{ip_address}", timeout=3).json()
-        if response.get("status") == "success":
-            return response.get("lat"), response.get("lon")
-    except Exception:
-        pass
-    return None, None
 
 def ensure_link_exists(link_id):
     connection = get_db_connection()
@@ -137,6 +114,20 @@ def handle_delete_link(link_id):
     connection.close()
     return redirect(url_for("router.admin_dashboard"))
 
+def handle_delete_visit(visit_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT link_id FROM visits WHERE id = ?", (visit_id,))
+    record = cursor.fetchone()
+    if record:
+        link_id = record[0]
+        cursor.execute("DELETE FROM visits WHERE id = ?", (visit_id,))
+        connection.commit()
+        connection.close()
+        return redirect(url_for("router.admin_stats", link_id=link_id))
+    connection.close()
+    return redirect(url_for("router.admin_dashboard"))
+
 def handle_save_location(link_id):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -153,10 +144,7 @@ def handle_save_location(link_id):
     username = request_data.get("username", "ไม่ระบุตัวตน")
     latitude = request_data.get("latitude")
     longitude = request_data.get("longitude")
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    if latitude is None or longitude is None:
-        latitude, longitude = get_location_from_ip(user_ip)
+    current_time_bangkok = datetime.now(ZoneInfo("Asia/Bangkok")).strftime("%Y-%m-%d %H:%M:%S")
 
     cursor.execute(
         """
@@ -170,7 +158,7 @@ def handle_save_location(link_id):
             request.headers.get("User-Agent"),
             latitude,
             longitude,
-            current_time,
+            current_time_bangkok,
         ),
     )
     connection.commit()

@@ -68,6 +68,7 @@
                 <th>สถานะตำแหน่ง</th>
                 <th>แผนที่</th>
                 <th>อุปกรณ์ / User Agent</th>
+                <th>จัดการ</th>
               </tr>
             </thead>
             <tbody>
@@ -133,6 +134,22 @@
                     >
                     {% endif %}
                   </div>
+                </td>
+                <td>
+                  <form
+                    action="/api/delete-visit/{{ visit['id'] }}"
+                    method="post"
+                  >
+                    <button
+                      type="submit"
+                      class="stats-delete-btn"
+                      onclick="
+                        return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');
+                      "
+                    >
+                      🗑 ลบ
+                    </button>
+                  </form>
                 </td>
               </tr>
               {% endfor %}

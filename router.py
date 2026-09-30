@@ -56,7 +56,7 @@ def admin_stats(link_id):
     visits = api.fetch_link_stats(link_id)
     if visits is None:
         return "Link not found", 404
-    return render_template('admin_stats.html', link_id=link_id, visits=visits, current_username=session.get('admin_username'))
+    return render_template('admin_stats.html', link_id=link_id, visits=visits)
 
 @router.route('/api/create-link', methods=['POST'])
 @router.route('/admin/create_link', methods=['POST'])
@@ -71,3 +71,9 @@ def delete_link(link_id):
     if not session.get('admin_logged_in'):
         return redirect(url_for('router.admin_login'))
     return api.handle_delete_link(link_id)
+
+@router.route('/api/delete-visit/<int:visit_id>', methods=['POST'])
+def delete_visit(visit_id):
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('router.admin_login'))
+    return api.handle_delete_visit(visit_id)

