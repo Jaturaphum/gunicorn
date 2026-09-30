@@ -1,49 +1,35 @@
 :root {
   --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-
-  --bg-color: #f1f5f9;
-  --card-bg: #ffffff;
-
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-
+  --primary-hover-color: #1d4ed8;
+  --background-color: #f1f5f9;
+  --card-background-color: #ffffff;
+  --text-main-color: #0f172a;
+  --text-muted-color: #64748b;
   --border-color: #e2e8f0;
-
-  --success-color: #16a34a;
-  --danger-color: #dc2626;
-
-  --shadow:
-    0 4px 12px rgba(15, 23, 42, 0.06);
+  --danger-color: #ef4444;
+  --danger-hover-color: #dc2626;
+  --secondary-color: #64748b;
+  --secondary-hover-color: #475569;
+  --box-shadow-value: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 * {
   box-sizing: border-box;
 }
 
-html {
+html, body {
   width: 100%;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
 }
 
 body {
-  width: 100%;
   min-height: 100vh;
-
-  margin: 0;
-  padding: 32px 20px;
-
-  font-family:
-    "Segoe UI",
-    Tahoma,
-    Geneva,
-    Verdana,
-    sans-serif;
-
-  background: var(--bg-color);
-  color: var(--text-main);
-
-  overflow-x: hidden;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-main-color);
 }
 
 .container {
@@ -52,35 +38,30 @@ body {
   margin: 0 auto;
 }
 
-
-/* ==========================================
-   BUTTON
-========================================== */
+.card {
+  width: 100%;
+  background-color: var(--card-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--box-shadow-value);
+}
 
 .btn {
   min-height: 42px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  gap: 7px;
-
+  gap: 8px;
   padding: 10px 16px;
-
   border: none;
-  border-radius: 9px;
-
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
-
   text-decoration: none;
-
   cursor: pointer;
-
-  transition:
-    transform 0.15s ease,
-    background 0.15s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .btn:hover {
@@ -88,70 +69,38 @@ body {
 }
 
 .btn-primary {
-  background: var(--primary-color);
-  color: #ffffff;
+  background-color: var(--primary-color);
+  color: rgb(255, 255, 255);
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover);
+  background-color: var(--primary-hover-color);
 }
 
 .btn-refresh {
-  background: #64748b;
-  color: #ffffff;
+  background-color: var(--secondary-color);
+  color: rgb(255, 255, 255);
 }
 
 .btn-refresh:hover {
-  background: #475569;
+  background-color: var(--secondary-hover-color);
 }
 
 .btn-danger {
-  background: #ef4444;
-  color: #ffffff;
+  background-color: var(--danger-color);
+  color: rgb(255, 255, 255);
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  background-color: var(--danger-hover-color);
 }
 
-
-/* ==========================================
-   CARD
-========================================== */
-
-.card {
-  width: 100%;
-
-  background: var(--card-bg);
-
-  border: 1px solid var(--border-color);
-
-  border-radius: 16px;
-
-  padding: 22px;
-
-  margin-bottom: 20px;
-
-  box-shadow: var(--shadow);
-}
-
-
-/* ==========================================
-   MOBILE
-========================================== */
-
-@media (max-width: 600px) {
-
+@media (max-width: 480px) {
   body {
-    padding: 12px 10px;
+    padding: 10px;
   }
-
-}
-
-@media (max-width: 380px) {
-
-  body {
-    padding: 8px;
+  .card {
+    padding: 14px;
+    border-radius: 12px;
   }
-
 }

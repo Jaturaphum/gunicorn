@@ -1,106 +1,62 @@
-/* ==========================================
-   LOGIN
-========================================== */
-
 .login-wrapper {
   display: flex;
-
   align-items: center;
   justify-content: center;
-
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 40px);
+  padding: 16px;
 }
 
 .login-card {
   width: 100%;
   max-width: 380px;
-
-  padding: 36px;
-
-  background: var(--card-bg);
-
+  padding: 28px;
+  background-color: var(--card-background-color);
   border-radius: 16px;
-
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.08),
-    0 4px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--box-shadow-value);
+  border: 1px solid var(--border-color);
 }
 
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-
-  margin-bottom: 7px;
-
+  margin-bottom: 6px;
   font-weight: 600;
-
   font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
-
-  padding: 11px 13px;
-
+  padding: 10px 12px;
   border: 1px solid var(--border-color);
-
   border-radius: 8px;
-
   font-size: 14px;
-
   outline: none;
 }
 
 .form-group input:focus {
   border-color: var(--primary-color);
-
-  box-shadow:
-    0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .error-msg {
-  color: #dc2626;
-
-  background: #fef2f2;
-
-  border: 1px solid #fecaca;
-
+  color: rgb(220, 38, 38);
+  background-color: rgb(254, 242, 242);
+  border: 1px solid rgb(254, 202, 202);
   padding: 10px 12px;
-
   border-radius: 8px;
-
-  font-size: 14px;
-
+  font-size: 13px;
   margin-bottom: 16px;
 }
 
-/* The login submit button uses .btn-primary on its own (no .btn class),
-   so give it full button sizing here, scoped to the login card. */
 .login-card .btn-primary {
-  min-height: 42px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 10px 16px;
-
-  border: none;
-  border-radius: 9px;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.15s ease,
-    background 0.15s ease;
+  width: 100%;
 }
 
-.login-card .btn-primary:hover {
-  transform: translateY(-1px);
+@media (max-width: 480px) {
+  .login-card {
+    padding: 20px;
+  }
 }
