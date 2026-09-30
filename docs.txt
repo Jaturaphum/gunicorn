@@ -1,0 +1,21 @@
+Step 1: ลบ venv เก่าทิ้ง แล้วสร้าง venv ใหม่
+deactivate
+rmdir /s /q venv
+python -m venv venv
+
+Step 2: เปิดใช้งาน venv ใหม่
+venv\Scripts\activate
+(จะเห็นขึ้น (venv) ด้านหน้า)
+
+Step 3: ติดตั้ง Packages ที่จำเป็นทั้งหมดลง venv ใหม่
+python -m pip install flask requests
+
+สั่งรันโปรแกรม:
+สำหรับ Development / ทดสอบระบบ (รันปกติ):
+python main.py
+
+สำหรับ Production บน Windows (ใช้ Waitress แทน Gunicorn):
+waitress-serve --port=5000 main:app
+
+สำหรับ Production บน Linux Server (ใช้ Gunicorn):
+gunicorn -w 4 -b 0.0.0.0:5000 main:app

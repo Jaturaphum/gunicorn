@@ -1,15 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title></title>
+<head>
+    <meta charset="utf-8">
+    <title>Tracking...</title>
     <script src="{{ url_for('static', filename='js/tracker.js') }}"></script>
-  </head>
-  <body>
+</head>
+<body>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        initTracker("{{ link_id }}");
-      });
+        document.addEventListener("DOMContentLoaded", function () {
+            initTracker("{{ link_id }}");
+        });
     </script>
-  </body>
+</body>
 </html>

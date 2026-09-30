@@ -2,11 +2,8 @@
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>สถิติการเข้าชม - {{ link_id }}</title>
-
+    <title>รายละเอียดสถิติการเข้าชม - {{ link_id }}</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/common.css') }}"
@@ -16,25 +13,21 @@
       href="{{ url_for('static', filename='css/admin_stats.css') }}"
     />
   </head>
-
   <body class="stats-page">
     <div class="stats-container">
       <div class="stats-page-header">
         <div class="stats-header-left">
           <a href="/admin" class="stats-back-btn">
             <span>←</span>
-            <span>กลับหน้า Admin</span>
+            <span>กลับหน้า Dashboard</span>
           </a>
 
           <div class="stats-title-row">
             <div class="stats-title-icon">📊</div>
-
             <div>
-              <h1 class="stats-title">สถิติการเข้าชม</h1>
-
+              <h1 class="stats-title">รายงานสถิติเชิงลึก</h1>
               <div class="stats-link-id">
-                Link ID:
-                <code>{{ link_id }}</code>
+                Link ID: <code>{{ link_id }}</code>
               </div>
             </div>
           </div>
@@ -42,38 +35,39 @@
 
         <div class="stats-total-box">
           <div class="stats-total-icon">👁</div>
-
           <div>
-            <div class="stats-total-label">จำนวนการเข้าชม</div>
-
+            <div class="stats-total-label">จำนวนการเข้าชมทั้งหมด</div>
             <div class="stats-total-value">
-              {{ visits|length }}
-              <span>ครั้ง</span>
+              {{ visits|length }} <span>ครั้ง</span>
             </div>
           </div>
         </div>
       </div>
+
       <div class="stats-card">
         <div class="stats-section-header">
           <div class="stats-section-title-wrap">
             <div class="stats-section-icon">👥</div>
             <div>
-              <h2>รายละเอียดการเข้าชม</h2>
-              <p>ข้อมูล Session ของผู้เข้าชมลิงก์นี้</p>
+              <h2>ประวัติการเข้าชมอย่างละเอียด</h2>
+              <p>แสดงข้อมูลผู้ใช้งาน เวลาเปิด ลิงก์พิกัด และอุปกรณ์ที่ใช้งาน</p>
             </div>
           </div>
           <div class="stats-count-badge">{{ visits|length }} รายการ</div>
         </div>
+
         {% if visits %}
         <div class="stats-table-wrapper">
           <table class="stats-table">
             <thead>
               <tr>
                 <th class="stats-col-number">#</th>
+                <th>เวลาที่เข้าชม</th>
+                <th>ผู้ใช้งาน (Username)</th>
                 <th>IP Address</th>
-                <th>พิกัด</th>
+                <th>สถานะตำแหน่ง</th>
                 <th>แผนที่</th>
-                <th>User Agent</th>
+                <th>อุปกรณ์ / User Agent</th>
               </tr>
             </thead>
             <tbody>
@@ -81,18 +75,24 @@
               <tr>
                 <td class="stats-row-number">{{ loop.index }}</td>
                 <td>
-                  <div class="stats-data-label">IP ADDRESS</div>
-                  <span class="stats-ip">
-                    {{ visit["ip_address"] or "-" }}
-                  </span>
+                  <span class="stats-time"
+                    >🕒 {{ visit["created_at"] or "ไม่ระบุเวลา" }}</span
+                  >
+                </td>
+                <td>
+                  <span class="stats-username"
+                    >👤 {{ visit["username"] or "ไม่ระบุตัวตน" }}</span
+                  >
+                </td>
+                <td>
+                  <span class="stats-ip">{{ visit["ip_address"] or "-" }}</span>
                 </td>
                 <td>
                   {% if visit["latitude"] is not none and visit["longitude"] is
                   not none %}
                   <div class="stats-location">
                     <div class="stats-location-status success">
-                      <span>●</span>
-                      ได้รับพิกัด
+                      <span>●</span> ได้รับพิกัด
                     </div>
                     <div class="stats-coordinates">
                       {{ "%.5f"|format(visit["latitude"]) }}, {{
@@ -101,8 +101,7 @@
                   </div>
                   {% else %}
                   <div class="stats-location-status denied">
-                    <span>●</span>
-                    ไม่ได้รับอนุญาต
+                    <span>●</span> ไม่ได้รับอนุญาต
                   </div>
                   {% endif %}
                 </td>
@@ -114,18 +113,25 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     class="stats-map-btn"
+                    >📍 เปิดบน Google Maps</a
                   >
-                    <span>📍</span>
-                    <span>เปิดแผนที่</span>
-                  </a>
                   {% else %}
-                  <span class="stats-no-data"> - </span>
+                  <span class="stats-no-data">-</span>
                   {% endif %}
                 </td>
                 <td>
-                  <div class="stats-data-label">USER AGENT</div>
-                  <div class="stats-user-agent">
-                    {{ visit["user_agent"] or "-" }}
+                  <div class="stats-user-agent-badges">
+                    {% if visit["parsed_ua"] %} {% for key, value in
+                    visit["parsed_ua"].items() %}
+                    <span class="ua-badge"
+                      ><strong class="ua-key">{{ key }}:</strong> {{ value
+                      }}</span
+                    >
+                    {% endfor %} {% else %}
+                    <span class="stats-no-data"
+                      >{{ visit["user_agent"] or "-" }}</span
+                    >
+                    {% endif %}
                   </div>
                 </td>
               </tr>
@@ -133,71 +139,13 @@
             </tbody>
           </table>
         </div>
-        <div class="stats-mobile-list">
-          {% for visit in visits %}
-          <div class="stats-mobile-item">
-            <div class="stats-mobile-header">
-              <div class="stats-mobile-number">#{{ loop.index }}</div>
-              {% if visit["latitude"] is not none and visit["longitude"] is not
-              none %}
-              <div class="stats-mobile-status success">● ได้รับพิกัด</div>
-              {% else %}
-              <div class="stats-mobile-status denied">● ไม่ได้รับอนุญาต</div>
-              {% endif %}
-            </div>
-            <div class="stats-mobile-row">
-              <div class="stats-mobile-label">IP Address</div>
-              <div class="stats-mobile-value">
-                <span class="stats-ip"> {{ visit["ip_address"] or "-" }} </span>
-              </div>
-            </div>
-            <div class="stats-mobile-row">
-              <div class="stats-mobile-label">พิกัด</div>
-              <div class="stats-mobile-value">
-                {% if visit["latitude"] is not none and visit["longitude"] is
-                not none %}
-                <div class="stats-mobile-coordinate">
-                  {{ "%.5f"|format(visit["latitude"]) }}, {{
-                  "%.5f"|format(visit["longitude"]) }}
-                </div>
-                {% else %}
-                <span class="stats-no-data"> ไม่ได้รับข้อมูล </span>
-                {% endif %}
-              </div>
-            </div>
-            {% if visit["latitude"] is not none and visit["longitude"] is not
-            none %}
-            <div class="stats-mobile-map">
-              <a
-                href="https://maps.google.com/?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="stats-map-btn stats-map-btn-mobile"
-              >
-                📍 เปิดตำแหน่งบน Google Maps
-              </a>
-            </div>
-            {% endif %}
-            <div class="stats-mobile-row stats-mobile-user-agent-row">
-              <div class="stats-mobile-label">User Agent</div>
-              <div class="stats-mobile-user-agent">
-                {{ visit["user_agent"] or "-" }}
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
         {% else %}
         <div class="stats-empty">
           <div class="stats-empty-icon">📊</div>
-
           <h3>ยังไม่มีประวัติการเข้าชม</h3>
-
-          <p>เมื่อมีผู้เปิดลิงก์ ข้อมูลการเข้าชมจะแสดงที่หน้านี้</p>
-
+          <p>เมื่อมีผู้เปิดลิงก์ ข้อมูลจะปรากฏที่หน้านี้ทันที</p>
           <a href="/admin" class="stats-empty-btn"> ← กลับหน้า Admin </a>
         </div>
-
         {% endif %}
       </div>
     </div>

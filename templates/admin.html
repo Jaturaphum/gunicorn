@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - Session Tracker</title>
-
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/common.css') }}"
@@ -14,12 +13,8 @@
       href="{{ url_for('static', filename='css/admin.css') }}"
     />
   </head>
-
   <body>
     <div class="container">
-      <!-- =========================
-           Header
-      ========================== -->
       <div class="admin-header">
         <div class="header-content">
           <div>
@@ -27,14 +22,23 @@
               <span class="header-icon">📊</span>
               <div>
                 <h1>ระบบจัดการ Session</h1>
-                <p>จัดการลิงก์และดูสถิติการเข้าชม</p>
+                <div class="header-subtitle-wrap">
+                  <span>จัดการลิงก์และดูสถิติการเข้าชม</span>
+                  {% if current_username %}
+                  <div class="user-badge">
+                    <span class="user-badge-icon">👤</span>
+                    <span class="user-badge-label">ผู้ใช้งาน:</span>
+                    <strong class="user-badge-name"
+                      >{{ current_username }}</strong
+                    >
+                  </div>
+                  {% endif %}
+                </div>
               </div>
             </div>
           </div>
-
           <div class="header-actions">
             <a href="/admin" class="btn btn-refresh"> ↻ <span>รีเฟรช</span> </a>
-
             <a href="/logout" class="btn btn-danger">
               ⇥ <span>ออกจากระบบ</span>
             </a>
@@ -42,22 +46,16 @@
         </div>
       </div>
 
-      <!-- =========================
-           Summary
-      ========================== -->
       <div class="summary-grid">
         <div class="summary-card">
           <div class="summary-icon blue">🔗</div>
-
           <div>
             <div class="summary-label">ลิงก์ทั้งหมด</div>
             <div class="summary-value">{{ links_data|length }}</div>
           </div>
         </div>
-
         <div class="summary-card">
           <div class="summary-icon green">👁</div>
-
           <div>
             <div class="summary-label">จำนวนการเข้าชม</div>
             <div class="summary-value">{{ total_visits }}</div>
@@ -65,20 +63,15 @@
         </div>
       </div>
 
-      <!-- =========================
-           Create Link
-      ========================== -->
       <div class="card create-card">
         <div class="create-content">
           <div class="create-info">
             <div class="create-icon">＋</div>
-
             <div>
               <h2>สร้าง Unique Link</h2>
               <p>สร้างลิงก์ใหม่สำหรับติดตาม Session</p>
             </div>
           </div>
-
           <form action="/api/create-link" method="post">
             <button type="submit" class="btn btn-primary create-button">
               ＋ สร้างลิงก์ใหม่
@@ -87,46 +80,32 @@
         </div>
       </div>
 
-      <!-- =========================
-           Link List
-      ========================== -->
       <div class="card">
         <div class="section-header">
           <div>
             <h2>รายการลิงก์ทั้งหมด</h2>
-
             <p>จัดการ เปิดดู หรือดูสถิติของแต่ละลิงก์</p>
           </div>
-
           <div class="link-count">{{ links_data|length }} Links</div>
         </div>
 
         {% if links_data %}
-
         <div class="link-list">
           {% for item in links_data %} {% set link_id = item[0] %} {% set count
           = item[1] %}
-
           <div class="link-item">
-            <!-- Link Information -->
             <div class="link-info">
               <div class="link-title">
                 <span class="link-number"> #{{ loop.index }} </span>
-
                 <span>Link ID</span>
               </div>
-
               <div class="link-url">/track/{{ link_id }}</div>
-
               <div class="visit-count">
                 <span class="visit-icon">👁</span>
                 {{ count }} ครั้ง
               </div>
             </div>
-
-            <!-- Actions -->
             <div class="link-actions">
-              <!-- Copy -->
               <button
                 type="button"
                 class="action-btn copy-btn"
@@ -135,8 +114,6 @@
                 <span>📋</span>
                 <span>คัดลอก</span>
               </button>
-
-              <!-- Open -->
               <a
                 href="/track/{{ link_id }}"
                 target="_blank"
@@ -145,14 +122,14 @@
                 <span>↗</span>
                 <span>เปิดลิงก์</span>
               </a>
-
-              <!-- Stats -->
-              <a href="/admin/stats/{{ link_id }}" class="action-btn stats-btn">
+              <a
+                href="/admin/stats/{{ link_id }}"
+                target="_blank"
+                class="action-btn stats-btn"
+              >
                 <span>📈</span>
                 <span>สถิติ</span>
               </a>
-
-              <!-- Delete -->
               <form
                 action="/api/delete-link/{{ link_id }}"
                 method="post"
@@ -173,25 +150,17 @@
               </form>
             </div>
           </div>
-
           {% endfor %}
         </div>
-
         {% else %}
-
-        <!-- Empty State -->
         <div class="empty-state">
           <div class="empty-icon">🔗</div>
-
           <h3>ยังไม่มีลิงก์</h3>
-
           <p>กดปุ่ม "สร้างลิงก์ใหม่" เพื่อเริ่มใช้งานระบบ</p>
         </div>
-
         {% endif %}
       </div>
     </div>
-
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
   </body>
 </html>
