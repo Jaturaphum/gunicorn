@@ -9,16 +9,16 @@
 
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
+      href="{{ url_for('static', filename='css/common.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin_stats.css') }}"
     />
   </head>
 
   <body class="stats-page">
     <div class="stats-container">
-      <!-- =========================
-           PAGE HEADER
-      ========================== -->
-
       <div class="stats-page-header">
         <div class="stats-header-left">
           <a href="/admin" class="stats-back-btn">
@@ -53,11 +53,6 @@
           </div>
         </div>
       </div>
-
-      <!-- =========================
-           DETAIL CARD
-      ========================== -->
-
       <div class="stats-card">
         <div class="stats-section-header">
           <div class="stats-section-title-wrap">
