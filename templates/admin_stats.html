@@ -62,23 +62,14 @@
         <div class="stats-section-header">
           <div class="stats-section-title-wrap">
             <div class="stats-section-icon">👥</div>
-
             <div>
               <h2>รายละเอียดการเข้าชม</h2>
-
               <p>ข้อมูล Session ของผู้เข้าชมลิงก์นี้</p>
             </div>
           </div>
-
           <div class="stats-count-badge">{{ visits|length }} รายการ</div>
         </div>
-
         {% if visits %}
-
-        <!-- =========================
-             DESKTOP TABLE
-        ========================== -->
-
         <div class="stats-table-wrapper">
           <table class="stats-table">
             <thead>
@@ -90,57 +81,39 @@
                 <th>User Agent</th>
               </tr>
             </thead>
-
             <tbody>
               {% for visit in visits %}
-
               <tr>
                 <td class="stats-row-number">{{ loop.index }}</td>
-
-                <!-- IP -->
-
                 <td>
                   <div class="stats-data-label">IP ADDRESS</div>
-
                   <span class="stats-ip">
                     {{ visit["ip_address"] or "-" }}
                   </span>
                 </td>
-
-                <!-- LOCATION -->
-
                 <td>
                   {% if visit["latitude"] is not none and visit["longitude"] is
                   not none %}
-
                   <div class="stats-location">
                     <div class="stats-location-status success">
                       <span>●</span>
                       ได้รับพิกัด
                     </div>
-
                     <div class="stats-coordinates">
                       {{ "%.5f"|format(visit["latitude"]) }}, {{
                       "%.5f"|format(visit["longitude"]) }}
                     </div>
                   </div>
-
                   {% else %}
-
                   <div class="stats-location-status denied">
                     <span>●</span>
                     ไม่ได้รับอนุญาต
                   </div>
-
                   {% endif %}
                 </td>
-
-                <!-- MAP -->
-
                 <td>
                   {% if visit["latitude"] is not none and visit["longitude"] is
                   not none %}
-
                   <a
                     href="https://maps.google.com/?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
                     target="_blank"
@@ -150,90 +123,55 @@
                     <span>📍</span>
                     <span>เปิดแผนที่</span>
                   </a>
-
                   {% else %}
-
                   <span class="stats-no-data"> - </span>
-
                   {% endif %}
                 </td>
-
-                <!-- USER AGENT -->
-
                 <td>
                   <div class="stats-data-label">USER AGENT</div>
-
                   <div class="stats-user-agent">
                     {{ visit["user_agent"] or "-" }}
                   </div>
                 </td>
               </tr>
-
               {% endfor %}
             </tbody>
           </table>
         </div>
-
-        <!-- =========================
-             MOBILE CARDS
-        ========================== -->
-
         <div class="stats-mobile-list">
           {% for visit in visits %}
-
           <div class="stats-mobile-item">
             <div class="stats-mobile-header">
               <div class="stats-mobile-number">#{{ loop.index }}</div>
-
               {% if visit["latitude"] is not none and visit["longitude"] is not
               none %}
-
               <div class="stats-mobile-status success">● ได้รับพิกัด</div>
-
               {% else %}
-
               <div class="stats-mobile-status denied">● ไม่ได้รับอนุญาต</div>
-
               {% endif %}
             </div>
-
-            <!-- IP -->
-
             <div class="stats-mobile-row">
               <div class="stats-mobile-label">IP Address</div>
-
               <div class="stats-mobile-value">
                 <span class="stats-ip"> {{ visit["ip_address"] or "-" }} </span>
               </div>
             </div>
-
-            <!-- LOCATION -->
-
             <div class="stats-mobile-row">
               <div class="stats-mobile-label">พิกัด</div>
-
               <div class="stats-mobile-value">
                 {% if visit["latitude"] is not none and visit["longitude"] is
                 not none %}
-
                 <div class="stats-mobile-coordinate">
                   {{ "%.5f"|format(visit["latitude"]) }}, {{
                   "%.5f"|format(visit["longitude"]) }}
                 </div>
-
                 {% else %}
-
                 <span class="stats-no-data"> ไม่ได้รับข้อมูล </span>
-
                 {% endif %}
               </div>
             </div>
-
-            <!-- MAP -->
-
             {% if visit["latitude"] is not none and visit["longitude"] is not
             none %}
-
             <div class="stats-mobile-map">
               <a
                 href="https://maps.google.com/?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
@@ -244,29 +182,17 @@
                 📍 เปิดตำแหน่งบน Google Maps
               </a>
             </div>
-
             {% endif %}
-
-            <!-- USER AGENT -->
-
             <div class="stats-mobile-row stats-mobile-user-agent-row">
               <div class="stats-mobile-label">User Agent</div>
-
               <div class="stats-mobile-user-agent">
                 {{ visit["user_agent"] or "-" }}
               </div>
             </div>
           </div>
-
           {% endfor %}
         </div>
-
         {% else %}
-
-        <!-- =========================
-             EMPTY STATE
-        ========================== -->
-
         <div class="stats-empty">
           <div class="stats-empty-icon">📊</div>
 
