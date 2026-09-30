@@ -13,15 +13,18 @@
     />
   </head>
 
-  <body>
-    <div class="container">
-      <!-- ==========================================
+  <body class="stats-page">
+    <div class="stats-container">
+      <!-- =========================
            PAGE HEADER
-      =========================================== -->
+      ========================== -->
 
       <div class="stats-page-header">
         <div class="stats-header-left">
-          <a href="/admin" class="back-link"> ← กลับหน้า Admin </a>
+          <a href="/admin" class="stats-back-btn">
+            <span>←</span>
+            <span>กลับหน้า Admin</span>
+          </a>
 
           <div class="stats-title-row">
             <div class="stats-title-icon">📊</div>
@@ -37,59 +40,54 @@
           </div>
         </div>
 
-        <div class="visit-summary">
-          <div class="visit-summary-icon">👁</div>
+        <div class="stats-total-box">
+          <div class="stats-total-icon">👁</div>
 
           <div>
-            <div class="visit-summary-label">จำนวนการเข้าชม</div>
+            <div class="stats-total-label">จำนวนการเข้าชม</div>
 
-            <div class="visit-count-large">
+            <div class="stats-total-value">
               {{ visits|length }}
-
-              <span> ครั้ง </span>
+              <span>ครั้ง</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ==========================================
+      <!-- =========================
            DETAIL CARD
-      =========================================== -->
+      ========================== -->
 
-      <div class="card stats-card">
-        <div class="section-header">
-          <div>
-            <h2>รายละเอียดการเข้าชม</h2>
+      <div class="stats-card">
+        <div class="stats-section-header">
+          <div class="stats-section-title-wrap">
+            <div class="stats-section-icon">👥</div>
 
-            <p>ข้อมูล Session ของผู้เข้าชมลิงก์นี้</p>
+            <div>
+              <h2>รายละเอียดการเข้าชม</h2>
+
+              <p>ข้อมูล Session ของผู้เข้าชมลิงก์นี้</p>
+            </div>
           </div>
 
-          {% if visits %}
-
-          <span class="link-count"> {{ visits|length }} รายการ </span>
-
-          {% endif %}
+          <div class="stats-count-badge">{{ visits|length }} รายการ</div>
         </div>
 
         {% if visits %}
 
-        <!-- ==========================================
+        <!-- =========================
              DESKTOP TABLE
-        =========================================== -->
+        ========================== -->
 
-        <div class="table-wrapper stats-table-wrapper">
-          <table class="data-table stats-table">
+        <div class="stats-table-wrapper">
+          <table class="stats-table">
             <thead>
               <tr>
-                <th class="column-number">#</th>
-
-                <th class="column-ip">IP Address</th>
-
-                <th class="column-location">พิกัด</th>
-
-                <th class="column-map">แผนที่</th>
-
-                <th class="column-user-agent">User Agent</th>
+                <th class="stats-col-number">#</th>
+                <th>IP Address</th>
+                <th>พิกัด</th>
+                <th>แผนที่</th>
+                <th>User Agent</th>
               </tr>
             </thead>
 
@@ -97,53 +95,49 @@
               {% for visit in visits %}
 
               <tr>
-                <!-- Number -->
+                <td class="stats-row-number">{{ loop.index }}</td>
 
-                <td class="row-number">
-                  <span class="row-number-badge"> {{ loop.index }} </span>
-                </td>
-
-                <!-- IP Address -->
+                <!-- IP -->
 
                 <td>
-                  <div class="mobile-column-label">IP Address</div>
+                  <div class="stats-data-label">IP ADDRESS</div>
 
-                  <span class="ip-badge">
+                  <span class="stats-ip">
                     {{ visit["ip_address"] or "-" }}
                   </span>
                 </td>
 
-                <!-- Location -->
+                <!-- LOCATION -->
 
                 <td>
-                  <div class="mobile-column-label">พิกัด</div>
-
                   {% if visit["latitude"] is not none and visit["longitude"] is
                   not none %}
 
-                  <div class="location-info">
-                    <span class="location-status success"> ● ได้รับพิกัด </span>
+                  <div class="stats-location">
+                    <div class="stats-location-status success">
+                      <span>●</span>
+                      ได้รับพิกัด
+                    </div>
 
-                    <span class="coordinates">
+                    <div class="stats-coordinates">
                       {{ "%.5f"|format(visit["latitude"]) }}, {{
                       "%.5f"|format(visit["longitude"]) }}
-                    </span>
+                    </div>
                   </div>
 
                   {% else %}
 
-                  <span class="location-status denied">
-                    ● ไม่ได้รับอนุญาต
-                  </span>
+                  <div class="stats-location-status denied">
+                    <span>●</span>
+                    ไม่ได้รับอนุญาต
+                  </div>
 
                   {% endif %}
                 </td>
 
-                <!-- Map -->
+                <!-- MAP -->
 
                 <td>
-                  <div class="mobile-column-label">แผนที่</div>
-
                   {% if visit["latitude"] is not none and visit["longitude"] is
                   not none %}
 
@@ -151,24 +145,27 @@
                     href="https://maps.google.com/?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="map-button"
+                    class="stats-map-btn"
                   >
-                    📍 เปิดแผนที่
+                    <span>📍</span>
+                    <span>เปิดแผนที่</span>
                   </a>
 
                   {% else %}
 
-                  <span class="text-muted"> - </span>
+                  <span class="stats-no-data"> - </span>
 
                   {% endif %}
                 </td>
 
-                <!-- User Agent -->
+                <!-- USER AGENT -->
 
                 <td>
-                  <div class="mobile-column-label">User Agent</div>
+                  <div class="stats-data-label">USER AGENT</div>
 
-                  <div class="user-agent">{{ visit["user_agent"] or "-" }}</div>
+                  <div class="stats-user-agent">
+                    {{ visit["user_agent"] or "-" }}
+                  </div>
                 </td>
               </tr>
 
@@ -177,65 +174,72 @@
           </table>
         </div>
 
-        <!-- ==========================================
+        <!-- =========================
              MOBILE CARDS
-        =========================================== -->
+        ========================== -->
 
-        <div class="mobile-visit-list">
+        <div class="stats-mobile-list">
           {% for visit in visits %}
 
-          <div class="mobile-visit-card">
-            <!-- Card Header -->
+          <div class="stats-mobile-item">
+            <div class="stats-mobile-header">
+              <div class="stats-mobile-number">#{{ loop.index }}</div>
 
-            <div class="mobile-visit-header">
-              <div class="mobile-visit-number">#{{ loop.index }}</div>
+              {% if visit["latitude"] is not none and visit["longitude"] is not
+              none %}
 
-              <div class="mobile-visit-ip">
-                <span> IP Address </span>
+              <div class="stats-mobile-status success">● ได้รับพิกัด</div>
 
-                <code> {{ visit["ip_address"] or "-" }} </code>
+              {% else %}
+
+              <div class="stats-mobile-status denied">● ไม่ได้รับอนุญาต</div>
+
+              {% endif %}
+            </div>
+
+            <!-- IP -->
+
+            <div class="stats-mobile-row">
+              <div class="stats-mobile-label">IP Address</div>
+
+              <div class="stats-mobile-value">
+                <span class="stats-ip"> {{ visit["ip_address"] or "-" }} </span>
               </div>
             </div>
 
-            <!-- Location -->
+            <!-- LOCATION -->
 
-            <div class="mobile-info-row">
-              <div class="mobile-info-icon">📍</div>
+            <div class="stats-mobile-row">
+              <div class="stats-mobile-label">พิกัด</div>
 
-              <div class="mobile-info-content">
-                <div class="mobile-info-label">พิกัด</div>
-
+              <div class="stats-mobile-value">
                 {% if visit["latitude"] is not none and visit["longitude"] is
                 not none %}
 
-                <div class="location-info">
-                  <span class="location-status success"> ● ได้รับพิกัด </span>
-
-                  <span class="coordinates">
-                    {{ "%.5f"|format(visit["latitude"]) }}, {{
-                    "%.5f"|format(visit["longitude"]) }}
-                  </span>
+                <div class="stats-mobile-coordinate">
+                  {{ "%.5f"|format(visit["latitude"]) }}, {{
+                  "%.5f"|format(visit["longitude"]) }}
                 </div>
 
                 {% else %}
 
-                <span class="location-status denied"> ● ไม่ได้รับอนุญาต </span>
+                <span class="stats-no-data"> ไม่ได้รับข้อมูล </span>
 
                 {% endif %}
               </div>
             </div>
 
-            <!-- Map -->
+            <!-- MAP -->
 
             {% if visit["latitude"] is not none and visit["longitude"] is not
             none %}
 
-            <div class="mobile-map-row">
+            <div class="stats-mobile-map">
               <a
                 href="https://maps.google.com/?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="mobile-map-button"
+                class="stats-map-btn stats-map-btn-mobile"
               >
                 📍 เปิดตำแหน่งบน Google Maps
               </a>
@@ -243,17 +247,13 @@
 
             {% endif %}
 
-            <!-- User Agent -->
+            <!-- USER AGENT -->
 
-            <div class="mobile-info-row">
-              <div class="mobile-info-icon">🌐</div>
+            <div class="stats-mobile-row stats-mobile-user-agent-row">
+              <div class="stats-mobile-label">User Agent</div>
 
-              <div class="mobile-info-content">
-                <div class="mobile-info-label">User Agent</div>
-
-                <div class="mobile-user-agent">
-                  {{ visit["user_agent"] or "-" }}
-                </div>
+              <div class="stats-mobile-user-agent">
+                {{ visit["user_agent"] or "-" }}
               </div>
             </div>
           </div>
@@ -263,33 +263,21 @@
 
         {% else %}
 
-        <!-- ==========================================
+        <!-- =========================
              EMPTY STATE
-        =========================================== -->
+        ========================== -->
 
-        <div class="empty-state">
-          <div class="empty-icon">📊</div>
+        <div class="stats-empty">
+          <div class="stats-empty-icon">📊</div>
 
-          <div class="empty-title">ยังไม่มีประวัติการเข้าชม</div>
+          <h3>ยังไม่มีประวัติการเข้าชม</h3>
 
-          <div class="empty-description">
-            เมื่อมีผู้เปิดลิงก์ ข้อมูลจะแสดงที่หน้านี้
-          </div>
+          <p>เมื่อมีผู้เปิดลิงก์ ข้อมูลการเข้าชมจะแสดงที่หน้านี้</p>
 
-          <a href="/admin" class="empty-back-button"> ← กลับหน้า Admin </a>
+          <a href="/admin" class="stats-empty-btn"> ← กลับหน้า Admin </a>
         </div>
 
         {% endif %}
-      </div>
-
-      <!-- ==========================================
-           FOOTER
-      =========================================== -->
-
-      <div class="stats-footer">
-        <span> Session Tracking System </span>
-
-        <a href="/admin"> Admin Dashboard </a>
       </div>
     </div>
   </body>
