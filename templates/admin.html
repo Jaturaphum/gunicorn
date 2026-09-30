@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div
+        class="card"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <div>
+          <h2 style="margin: 0">ระบบจัดการลิงก์ติดตาม Session</h2>
+          <p
+            style="margin: 5px 0 0 0; color: var(--text-muted); font-size: 14px"
+          >
+            จัดการและดูสถิติการเข้าชมลิงก์ทั้งหมด
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <a href="/admin" class="btn-primary" style="background-color: #64748b"
+            >รีเฟรช</a
+          >
+          <a
+            href="/logout"
+            class="btn-primary"
+            style="background-color: #ef4444"
+            >ออกจากระบบ</a
+          >
+        </div>
+      </div>
+
+      ```
+      <!-- Card ปุ่มสร้างลิงก์ -->
+      <div class="card">
+        <form action="/api/create-link" method="post" style="margin: 0">
+          <button type="submit" class="btn-primary">
+            + สร้าง Unique Link ใหม่
+          </button>
+        </form>
+      </div>
+
+      <!-- Card รายการลิงก์ -->
+      <div class="card">
+        <h3>รายการลิงก์ทั้งหมด</h3>
+        {% if links_data %}
+        <ul class="link-list">
+          {% for item in links_data %} {# ดึงค่า link_id และ count จากข้อมูล
+          Dictionary หรือ Tuple #} {% set link_id = item.id if item.id is
+          defined else item[0] %} {% set count = item.count if item.count is
+          defined else item[1] %}
+
+          <li class="link-item">
+            <div>
+              <strong>Link ID:</strong> <code>/track/{{ link_id }}</code>
+              <span class="badge">{{ count }} เข้าชม</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <!-- คัดลอกลิงก์ -->
+              <button
+                type="button"
+                class="btn-primary"
+                style="
+                  padding: 6px 12px;
+                  font-size: 13px;
+                  background-color: #0ea5e9;
+                "
+                onclick="copyToClipboard('{{ request.host_url }}track/{{ link_id }}', this)"
+              >
+                คัดลอกลิงก์
+              </button>
+
+              <!-- เปิดลิงก์ -->
+              <a
+                href="/track/{{ link_id }}"
+                target="_blank"
+                class="btn-primary"
+                style="
+                  padding: 6px 12px;
+                  font-size: 13px;
+                  background-color: #10b981;
+                "
+                >เปิดลิงก์</a
+              >
+
+              <!-- ดูสถิติ -->
+              <a
+                href="/admin/stats/{{ link_id }}"
+                class="btn-primary"
+                style="padding: 6px 12px; font-size: 13px"
+                >ดูสถิติ</a
+              >
+
+              <!-- ลบลิงก์ -->
+              <form
+                action="/api/delete-link/{{ link_id }}"
+                method="post"
+                style="margin: 0; display: inline"
+              >
+                <button
+                  type="submit"
+                  class="btn-primary"
+                  style="
+                    padding: 6px 12px;
+                    font-size: 13px;
+                    background-color: #ef4444;
+                  "
+                  onclick="
+                    return confirm(
+                      'คุณแน่ใจหรือไม่ว่าต้องการลบลิงก์นี้? ข้อมูลสถิติทั้งหมดจะถูกลบไปด้วย',
+                    );
+                  "
+                >
+                  ลบ
+                </button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: var(--text-muted)">ยังไม่มีการสร้างลิงก์ในระบบ</p>
+        {% endif %}
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+  </body>
+</html>
