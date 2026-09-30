@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>สถิติการเข้าชม - {{ link_id }}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <a
+        href="/admin"
+        style="
+          text-decoration: none;
+          color: var(--primary-color);
+          font-weight: 600;
+        "
+        >← กลับหน้าหลัก Admin</a
+      >
+
+      <div class="card" style="margin-top: 16px">
+        <h2>สถิติการเข้าชมของ Link: <code>{{ link_id }}</code></h2>
+        <p>
+          จำนวนผู้เข้าชมทั้งหมด:
+          <span class="badge">{{ visits|length }} ครั้ง</span>
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>IP Address</th>
+              <th>พิกัด (Lat, Long)</th>
+              <th>แผนที่</th>
+              <th>User Agent</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for visit in visits %}
+            <tr>
+              <td>{{ visit.ip_address or '-' }}</td>
+              <td>
+                {% if visit.latitude and visit.longitude %} {{
+                "%.5f"|format(visit.latitude) }}, {{
+                "%.5f"|format(visit.longitude) }} {% else %}
+                <span style="color: #ef4444">ไม่ได้รับอนุญาต</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if visit.latitude and visit.longitude %}
+                <a
+                  href="https://maps.google.com/?q={{ visit.latitude }},{{ visit.longitude }}"
+                  target="_blank"
+                  >เปิด Google Maps</a
+                >
+                {% else %} - {% endif %}
+              </td>
+              <td
+                style="
+                  font-size: 12px;
+                  color: var(--text-muted);
+                  max-width: 300px;
+                  word-break: break-all;
+                "
+              >
+                {{ visit.user_agent or '-' }}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td
+                colspan="4"
+                style="text-align: center; color: var(--text-muted)"
+              >
+                ยังไม่มีประวัติการเข้าชม
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
