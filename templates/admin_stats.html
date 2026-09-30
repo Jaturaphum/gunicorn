@@ -2,83 +2,177 @@
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>สถิติการเข้าชม - {{ link_id }}</title>
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
   </head>
+
   <body>
     <div class="container">
-      <a
-        href="/admin"
-        style="
-          text-decoration: none;
-          color: var(--primary-color);
-          font-weight: 600;
-        "
-        >← กลับหน้าหลัก Admin</a
-      >
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <a href="/admin" class="back-link"> ← กลับหน้าหลัก Admin </a>
 
-      <div class="card" style="margin-top: 16px">
-        <h2>สถิติการเข้าชมของ Link: <code>{{ link_id }}</code></h2>
-        <p>
-          จำนวนผู้เข้าชมทั้งหมด:
-          <span class="badge">{{ visits|length }} ครั้ง</span>
-        </p>
+          <h1>สถิติการเข้าชม</h1>
 
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>IP Address</th>
-              <th>พิกัด (Lat, Long)</th>
-              <th>แผนที่</th>
-              <th>User Agent</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for visit in visits %}
-            <tr>
-              <td>{{ visit.ip_address or '-' }}</td>
-              <td>
-                {% if visit.latitude and visit.longitude %} {{
-                "%.5f"|format(visit.latitude) }}, {{
-                "%.5f"|format(visit.longitude) }} {% else %}
-                <span style="color: #ef4444">ไม่ได้รับอนุญาต</span>
-                {% endif %}
-              </td>
-              <td>
-                {% if visit.latitude and visit.longitude %}
-                <a
-                  href="https://maps.google.com/?q={{ visit.latitude }},{{ visit.longitude }}"
-                  target="_blank"
-                  >เปิด Google Maps</a
-                >
-                {% else %} - {% endif %}
-              </td>
-              <td
-                style="
-                  font-size: 12px;
-                  color: var(--text-muted);
-                  max-width: 300px;
-                  word-break: break-all;
-                "
-              >
-                {{ visit.user_agent or '-' }}
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td
-                colspan="4"
-                style="text-align: center; color: var(--text-muted)"
-              >
-                ยังไม่มีประวัติการเข้าชม
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+          <p class="page-description">
+            รายละเอียดการเข้าชมของลิงก์
+            <code>{{ link_id }}</code>
+          </p>
+        </div>
+
+        <div>
+          <a href="/admin" class="btn-primary"> กลับหน้า Admin </a>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🔗</div>
+
+          <div>
+            <div class="stat-label">Link ID</div>
+            <div class="stat-value stat-link">{{ link_id }}</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">👁️</div>
+
+          <div>
+            <div class="stat-label">จำนวนผู้เข้าชม</div>
+            <div class="stat-value">
+              {{ visits|length }}
+              <span class="stat-unit">ครั้ง</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📍</div>
+
+          <div>
+            <div class="stat-label">ได้รับพิกัด</div>
+            <div class="stat-value">
+              {% set location_count = namespace(value=0) %} {% for visit in
+              visits %} {% if visit["latitude"] is not none and
+              visit["longitude"] is not none %} {% set location_count.value =
+              location_count.value + 1 %} {% endif %} {% endfor %} {{
+              location_count.value }}
+              <span class="stat-unit">รายการ</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visit Table -->
+      <div class="card stats-card">
+        <div class="section-header">
+          <div>
+            <h2>ประวัติการเข้าชม</h2>
+            <p>รายละเอียดข้อมูลที่ได้รับจากผู้เข้าชม</p>
+          </div>
+
+          <span class="badge"> {{ visits|length }} ครั้ง </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>IP Address</th>
+                <th>ตำแหน่ง</th>
+                <th>แผนที่</th>
+                <th>User Agent</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for visit in visits %}
+              <tr>
+                <td class="row-number">{{ loop.index }}</td>
+
+                <td>
+                  <span class="ip-badge">
+                    {{ visit["ip_address"] or "-" }}
+                  </span>
+                </td>
+
+                <td>
+                  {% if visit["latitude"] is not none and visit["longitude"] is
+                  not none %}
+
+                  <div class="location-info">
+                    <span class="location-status success"> ● ได้รับพิกัด </span>
+
+                    <span class="coordinates">
+                      {{ "%.5f"|format(visit["latitude"]) }}, {{
+                      "%.5f"|format(visit["longitude"]) }}
+                    </span>
+                  </div>
+
+                  {% else %}
+
+                  <span class="location-status denied">
+                    ● ไม่ได้รับอนุญาต
+                  </span>
+
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if visit["latitude"] is not none and visit["longitude"] is
+                  not none %}
+
+                  <a
+                    href="https://www.google.com/maps?q={{ visit['latitude'] }},{{ visit['longitude'] }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="map-button"
+                  >
+                    📍 เปิดแผนที่
+                  </a>
+
+                  {% else %}
+
+                  <span class="text-muted">-</span>
+
+                  {% endif %}
+                </td>
+
+                <td>
+                  <div class="user-agent">{{ visit["user_agent"] or "-" }}</div>
+                </td>
+              </tr>
+
+              {% else %}
+
+              <tr>
+                <td colspan="5">
+                  <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+
+                    <div class="empty-title">ยังไม่มีประวัติการเข้าชม</div>
+
+                    <div class="empty-description">
+                      เมื่อมีผู้เปิดลิงก์ ข้อมูลการเข้าชมจะแสดงที่นี่
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </body>

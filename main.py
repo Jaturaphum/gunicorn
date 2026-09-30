@@ -1,11 +1,17 @@
 from datetime import timedelta
 import sqlite3
 import uuid
-from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 import os
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+if not SECRET_KEY:
+    SECRET_KEY = "dev-secret-key-change-this"
+
+app.secret_key = SECRET_KEY
 app.permanent_session_lifetime = timedelta(days=365)
 
 def init_db():
@@ -173,58 +179,28 @@ def admin_dashboard():
 @app.route("/admin/stats/<link_id>")
 def admin_view_stats(link_id):
     conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+
     cursor.execute("SELECT id FROM links WHERE id = ?", (link_id,))
     if not cursor.fetchone():
         conn.close()
         return "ไม่พบลิงก์นี้ในระบบ", 404
 
     cursor.execute(
-        "SELECT ip_address, latitude, longitude, user_agent FROM visits WHERE link_id = ?",
+        """
+        SELECT ip_address, latitude, longitude, user_agent
+        FROM visits
+        WHERE link_id = ?
+        ORDER BY id DESC
+        """,
         (link_id,),
     )
+
     visits = cursor.fetchall()
     conn.close()
 
-    rows_list = []
-    for visit in visits:
-        ip, lat, lng, ua = visit
-        if lat is not None and lng is not None:
-            loc = f"{lat:.5f}, {lng:.5f}"
-            map_link = f'<a href="https://maps.google.com/?q={lat},{lng}" target="_blank">ดูบน Google Maps</a>'
-        else:
-            loc = "ไม่ได้รับอนุญาต"
-            map_link = "-"
-
-        rows_list.append(
-            f"<tr><td>{ip or '-'}</td><td>{loc}</td><td>{map_link}</td><td>{ua or '-'}</td></tr>"
-        )
-
-    rows = "".join(rows_list)
-    return f"""
-    <!DOCTYPE html>
-    <html>
-    <head><title>สถิติ Link ID: {link_id}</title><meta charset="utf-8"></head>
-    <body style="font-family: sans-serif; padding: 20px;">
-        <h2>สถิติการเข้าชมของ Link ID: {link_id}</h2>
-        <p>จำนวนการเข้าชมทั้งหมด: {len(visits)} ครั้ง</p>
-        <table border="1" cellpadding="8" style="border-collapse: collapse;">
-            <thead>
-                <tr style="background-color: #f2f2f2;">
-                    <th>IP Address</th><th>พิกัด</th><th>แผนที่</th><th>User Agent</th>
-                </tr>
-            </thead>
-            <tbody>{rows if rows else '<tr><td colspan="4" align="center">ยังไม่มีผู้เข้าชม</td></tr>'}</tbody>
-        </table>
-        <br><a href="/admin">← กลับหน้า Admin</a>
-    </body>
-    </html>
-    """
-
-
-# ==========================================
-# 4. API ENDPOINTS
-# ==========================================
+    return render_template("admin_stats.html",link_id=link_id,visits=visits)
 
 
 @app.route("/api/create-link", methods=["POST"])
