@@ -11,8 +11,7 @@ base_directory = os.path.dirname(os.path.abspath(__file__))
 database_path = os.path.join(base_directory, "database.db")
 
 def get_db_connection():
-    database_connection = sqlite3.connect(database_path)
-    return database_connection
+    return sqlite3.connect(database_path)
 
 def init_db():
     database_connection = get_db_connection()
@@ -49,6 +48,8 @@ def parse_user_agent(user_agent_string):
     return parsed_data
 
 def ensure_link_exists(link_id):
+    if link_id == "favicon.ico":
+        return
     database_connection = get_db_connection()
     database_cursor = database_connection.cursor()
     database_cursor.execute("SELECT id FROM links WHERE id = ?", (link_id,))
@@ -130,6 +131,9 @@ def handle_delete_visit(visit_id):
     return redirect(url_for("router.admin_dashboard"))
 
 def handle_save_location(link_id):
+    if link_id == "favicon.ico":
+        return jsonify({"status": "ignored"})
+
     database_connection = get_db_connection()
     database_cursor = database_connection.cursor()
     database_cursor.execute("SELECT id FROM links WHERE id = ?", (link_id,))
@@ -138,7 +142,6 @@ def handle_save_location(link_id):
 
     request_data = request.get_json() or {}
     user_ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-    
     if user_ip_address and "," in user_ip_address:
         user_ip_address = user_ip_address.split(",")[0].strip()
 
