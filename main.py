@@ -5,10 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session, u
 
 app = Flask(__name__)
 app.secret_key = "secret_key_admin"
-
-# กำหนดให้ Session มีอายุยาวนาน (เช่น 365 วัน)
 app.permanent_session_lifetime = timedelta(days=365)
-
 
 def init_db():
     conn = sqlite3.connect("database.db")
