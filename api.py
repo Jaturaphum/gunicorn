@@ -138,23 +138,23 @@ def handle_save_location(link_id):
 
     request_data = request.get_json() or {}
     user_ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    
     if user_ip_address and "," in user_ip_address:
         user_ip_address = user_ip_address.split(",")[0].strip()
 
     username = request_data.get("username") or "ไม่ระบุตัวตน"
-    latitude = request_data.get("latitude")
-    longitude = request_data.get("longitude")
+    latitude = None
+    longitude = None
 
-    if latitude is None or longitude is None:
-        try:
-            lookup_url = f"http://ip-api.com/json/{user_ip_address}"
-            response = urllib.request.urlopen(lookup_url, timeout=3)
-            location_data = json.loads(response.read().decode("utf-8"))
-            if location_data.get("status") == "success":
-                latitude = location_data.get("lat")
-                longitude = location_data.get("lon")
-        except Exception:
-            pass
+    try:
+        lookup_url = f"http://ip-api.com/json/{user_ip_address}"
+        response = urllib.request.urlopen(lookup_url, timeout=3)
+        location_data = json.loads(response.read().decode("utf-8"))
+        if location_data.get("status") == "success":
+            latitude = location_data.get("lat")
+            longitude = location_data.get("lon")
+    except Exception:
+        pass
 
     bangkok_timezone = timezone(timedelta(hours=7))
     current_time_bangkok = datetime.now(bangkok_timezone).strftime("%Y-%m-%d %H:%M:%S")
