@@ -166,7 +166,7 @@ def admin_dashboard():
     links_data = cursor.fetchall()
     conn.close()
 
-    return render_template("admin_dashboard.html", links_data=links_data)
+    return render_template("admin.html", links_data=links_data)
 
 
 @app.route("/admin/stats/<link_id>")
