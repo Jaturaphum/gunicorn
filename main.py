@@ -2,9 +2,10 @@ from datetime import timedelta
 import sqlite3
 import uuid
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+import os
 
 app = Flask(__name__)
-app.secret_key = "secret_key_admin"
+app.secret_key = os.getenv("SECRET_KEY")
 app.permanent_session_lifetime = timedelta(days=365)
 
 def init_db():
