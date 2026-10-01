@@ -34,3 +34,11 @@ Back up MySQL with mysqldump rather than restoring a Render disk snapshot.
 If the web service was created separately instead of through the Blueprint, set MYSQL_HOST to the private host
 shown by session-mysql, MYSQL_PORT to 3306, MYSQL_DATABASE to tracking, MYSQL_USER to tracking_app, and
 MYSQL_PASSWORD to the same secret configured on session-mysql in the web service's Environment settings.
+
+For the existing Render service, open session-tracker > Environment > Add Environment Variable and set:
+MYSQL_HOST = the internal hostname shown on session-mysql (host only, without :3306)
+MYSQL_PORT = 3306
+MYSQL_DATABASE = tracking
+MYSQL_USER = tracking_app
+MYSQL_PASSWORD = the same secret set on session-mysql
+Then save changes and redeploy session-tracker. Do not set MYSQL_HOST to localhost or 127.0.0.1.

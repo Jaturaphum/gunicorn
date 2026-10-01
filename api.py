@@ -8,7 +8,13 @@ import mysql.connector
 from flask import jsonify, redirect, request, url_for
 
 def get_db_connection():
-    required_settings = ("MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE")
+    required_settings = (
+        "MYSQL_HOST",
+        "MYSQL_PORT",
+        "MYSQL_USER",
+        "MYSQL_PASSWORD",
+        "MYSQL_DATABASE",
+    )
     missing_settings = [setting for setting in required_settings if not os.environ.get(setting)]
     if missing_settings:
         missing_names = ", ".join(missing_settings)
@@ -18,8 +24,8 @@ def get_db_connection():
         )
 
     return mysql.connector.connect(
-        host=os.environ.get("MYSQL_HOST", "127.0.0.1"),
-        port=int(os.environ.get("MYSQL_PORT", "3306")),
+        host=os.environ["MYSQL_HOST"],
+        port=int(os.environ["MYSQL_PORT"]),
         user=os.environ["MYSQL_USER"],
         password=os.environ["MYSQL_PASSWORD"],
         database=os.environ["MYSQL_DATABASE"],
