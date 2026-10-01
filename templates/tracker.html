@@ -3,14 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>กำลังประมวลผล...</title>
-    <script src="{{ url_for('static', filename='js/tracker.js') }}"></script>
+    <title>กำลังเปิดลิงก์...</title>
   </head>
   <body>
+    <script src="{{ url_for('static', filename='js/tracker.js') }}"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        initTracker("{{ link_id }}");
-      });
+      initTracker({{ link_id|tojson }});
     </script>
   </body>
 </html>

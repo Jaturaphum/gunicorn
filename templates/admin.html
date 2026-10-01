@@ -21,13 +21,12 @@
             <div class="header-title">
               <span class="header-icon">📊</span>
               <div>
-                <h1>ระบบจัดการ Session</h1>
+                <h1>System Session</h1>
                 <div class="header-subtitle-wrap">
-                  <span>จัดการลิงก์และดูสถิติการเข้าชม</span>
                   {% if current_username %}
                   <div class="user-badge">
                     <span class="user-badge-icon">👤</span>
-                    <span class="user-badge-label">ผู้ใช้งาน:</span>
+                    <span class="user-badge-label">Username:</span>
                     <strong class="user-badge-name"
                       >{{ current_username }}</strong
                     >
@@ -51,14 +50,18 @@
           <div class="summary-icon blue">🔗</div>
           <div>
             <div class="summary-label">ลิงก์ทั้งหมด</div>
-            <div class="summary-value">{{ links_data|length }}</div>
+            <div class="summary-value" id="dashboard-link-count">
+              {{ links_data|length }}
+            </div>
           </div>
         </div>
         <div class="summary-card">
           <div class="summary-icon green">👁</div>
           <div>
             <div class="summary-label">จำนวนการเข้าชม</div>
-            <div class="summary-value">{{ total_visits }}</div>
+            <div class="summary-value" id="dashboard-visit-count">
+              {{ total_visits }}
+            </div>
           </div>
         </div>
       </div>
@@ -68,15 +71,36 @@
           <div class="create-info">
             <div class="create-icon">＋</div>
             <div>
-              <h2>สร้าง Unique Link</h2>
-              <p>สร้างลิงก์ใหม่สำหรับติดตาม Session</p>
+              <h2>Create Unique Link</h2>
             </div>
           </div>
-          <form action="/api/create-link" method="post">
-            <button type="submit" class="btn btn-primary create-button">
-              ＋ สร้างลิงก์ใหม่
-            </button>
-          </form>
+          <div class="create-actions">
+            <form
+              action="/api/create-link"
+              method="post"
+              class="custom-link-form"
+            >
+              <label for="link-id">LinkID</label>
+              <input
+                id="link-id"
+                name="link_id"
+                type="text"
+                placeholder="Enter LinkID"
+                pattern="[A-Za-z0-9_-]{1,64}"
+                maxlength="64"
+                autocomplete="off"
+                required
+              />
+              <button type="submit" class="btn btn-primary create-button">
+                Create LinkID
+              </button>
+            </form>
+            <form action="/api/create-link" method="post">
+              <button type="submit" class="btn btn-primary create-button">
+                Random LinkID
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -84,7 +108,6 @@
         <div class="section-header">
           <div>
             <h2>รายการลิงก์ทั้งหมด</h2>
-            <p>จัดการ เปิดดู หรือดูสถิติของแต่ละลิงก์</p>
           </div>
           <div class="link-count">{{ links_data|length }} Links</div>
         </div>

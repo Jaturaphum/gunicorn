@@ -15,6 +15,29 @@
   gap: 16px;
 }
 
+/* เพิ่มเติม: จัดช่องกรอก ID และปุ่มสร้างลิงก์ */
+.create-actions,
+.custom-link-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-link-form label {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.custom-link-form input {
+  width: 180px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font: inherit;
+}
+
 .header-title,
 .create-info {
   display: flex;
@@ -48,9 +71,9 @@
 
 .header-subtitle-wrap {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   color: var(--text-muted-color);
   font-size: 13px;
 }
@@ -220,6 +243,16 @@
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+  }
+
+  .create-actions,
+  .custom-link-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .custom-link-form input {
+    width: 100%;
   }
 
   .summary-grid {

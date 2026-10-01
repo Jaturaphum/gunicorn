@@ -1,22 +1,32 @@
-Step 1: ลบ venv เก่าทิ้ง แล้วสร้าง venv ใหม่
 deactivate
 rmdir /s /q venv
 python -m venv venv
-
-Step 2: เปิดใช้งาน venv ใหม่
 venv\Scripts\activate
-(จะเห็นขึ้น (venv) ด้านหน้า)
-
-Step 3: ติดตั้ง Packages ที่จำเป็นทั้งหมดลง venv ใหม่
-python -m pip install flask requests
 python -m pip install -r requirements.txt
 
-สั่งรันโปรแกรม:
-สำหรับ Development / ทดสอบระบบ (รันปกติ):
 python main.py
 
-สำหรับ Production บน Windows (ใช้ Waitress แทน Gunicorn):
-waitress-serve --port=5000 main:app
+MySQL and phpMyAdmin
+1. Copy .env.example to .env and replace all example secrets with long random values.
+2. Start MySQL: docker compose up -d db
+3. Copy existing SQLite data without changing database.db:
+	docker compose --profile migration run --rm migrate
+4. Start the app and phpMyAdmin: docker compose up -d --build app phpmyadmin
+5. Open the app at http://127.0.0.1:5000 and phpMyAdmin at http://127.0.0.1:8080.
+6. Sign in to phpMyAdmin using MYSQL_USER and MYSQL_PASSWORD from .env.
 
-สำหรับ Production บน Linux Server (ใช้ Gunicorn):
-gunicorn -w 4 -b 0.0.0.0:5000 main:app
+For a new database, skip step 3. MySQL data is stored in the mysql_data Docker volume.
+The phpMyAdmin port is bound to localhost only. Keep .env private and configure equivalent
+MYSQL_* and FLASK_SECRET_KEY environment variables when deploying outside Docker Compose.
+
+Render deployment
+1. Push this repository to GitHub and connect it in Render using New + > Blueprint.
+2. Render reads render.yaml and creates the Flask web service, private MySQL service, and phpMyAdmin web service.
+3. Enter unique MYSQL_PASSWORD and MYSQL_ROOT_PASSWORD values when prompted. Do not use the root password in the app.
+4. After deployment, open the session-tracker and session-phpmyadmin service URLs from the Render Dashboard.
+5. Sign in to phpMyAdmin with username tracking_app and MYSQL_PASSWORD.
+
+The MySQL service requires a paid plan and a persistent disk; Render's filesystem is otherwise temporary.
+The phpMyAdmin service is public, so use a strong MYSQL_PASSWORD and restrict its IP access in Render when your plan supports it.
+For SQLite data that exists on your PC, the Docker Compose migration command above does not move it to Render automatically.
+Back up MySQL with mysqldump rather than restoring a Render disk snapshot.

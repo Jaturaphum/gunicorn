@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
+from flask import Blueprint, jsonify, render_template, request, session, redirect, url_for
 import api
 
 router = Blueprint("router", __name__)
@@ -16,7 +16,8 @@ def home():
 def track_page(link_id):
     if link_id == "favicon.ico":
         return "", 204
-    api.ensure_link_exists(link_id)
+    if not api.is_valid_link_id(link_id) or not api.ensure_link_exists(link_id):
+        return "Link not found", 404
     return render_template("tracker.html", link_id=link_id)
 
 @router.route("/success")
@@ -66,12 +67,21 @@ def admin_stats(link_id):
         return "Link not found", 404
     return render_template("admin_stats.html", link_id=link_id, visits=visits)
 
+@router.route("/api/admin/updates")
+def admin_updates():
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "unauthorized"}), 401
+    link_id = request.args.get("link_id")
+    if link_id and not api.ensure_link_exists(link_id):
+        return jsonify({"error": "not_found"}), 404
+    return jsonify(api.fetch_live_counts(link_id))
+
 @router.route("/api/create-link", methods=["POST"])
 @router.route("/admin/create_link", methods=["POST"])
 def create_link():
     if not session.get("admin_logged_in"):
         return redirect(url_for("router.admin_login"))
-    return api.handle_create_link()
+    return api.handle_create_link(request.form.get("link_id") or None)
 
 @router.route("/api/delete-link/<link_id>", methods=["POST"])
 @router.route("/admin/delete_link/<link_id>", methods=["POST"])
