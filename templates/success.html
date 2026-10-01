@@ -1,8 +1,24 @@
 <!doctype html>
-<html>
+<html lang="th">
   <head>
     <meta charset="utf-8" />
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f7f4" />
+    <title>หยุดแชร์ตำแหน่งแล้ว</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/tracker.css') }}"
+    />
   </head>
-  <body></body>
+  <body>
+    <main class="sharing-page">
+      <section class="sharing-panel" aria-labelledby="success-title">
+        <div class="sharing-mark" aria-hidden="true">✓</div>
+        <p class="sharing-eyebrow">LOCATION SHARING</p>
+        <h1 id="success-title">หยุดแชร์ตำแหน่งแล้ว</h1>
+        <p class="sharing-copy">ระบบหยุดอัปเดตตำแหน่งของคุณเรียบร้อยแล้ว</p>
+        <a class="success-link" href="/">กลับหน้าหลัก</a>
+      </section>
+    </main>
+  </body>
 </html>

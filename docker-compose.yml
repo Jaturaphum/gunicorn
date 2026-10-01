@@ -1,65 +1,12 @@
 services:
-  db:
-    image: mysql:8.4
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE:?Set MYSQL_DATABASE in .env}
-      MYSQL_USER: ${MYSQL_USER:?Set MYSQL_USER in .env}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
   app:
     build: .
     restart: unless-stopped
     environment:
-      MYSQL_HOST: db
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: ${MYSQL_DATABASE:?Set MYSQL_DATABASE in .env}
-      MYSQL_USER: ${MYSQL_USER:?Set MYSQL_USER in .env}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
       FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:?Set FLASK_SECRET_KEY in .env}
+      DATABASE_PATH: /app/database.db
       PORT: 5000
+    volumes:
+      - ./database.db:/app/database.db
     ports:
       - "127.0.0.1:5000:5000"
-    depends_on:
-      db:
-        condition: service_healthy
-
-  phpmyadmin:
-    image: phpmyadmin:5.2-apache
-    restart: unless-stopped
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 0
-    ports:
-      - "127.0.0.1:${PMA_PORT:-8080}:80"
-    depends_on:
-      db:
-        condition: service_healthy
-
-  migrate:
-    build: .
-    profiles: ["migration"]
-    command: ["python", "migrate_sqlite_to_mysql.py", "/migration/database.db"]
-    environment:
-      MYSQL_HOST: db
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: ${MYSQL_DATABASE:?Set MYSQL_DATABASE in .env}
-      MYSQL_USER: ${MYSQL_USER:?Set MYSQL_USER in .env}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
-    volumes:
-      - ./database.db:/migration/database.db:ro
-    depends_on:
-      db:
-        condition: service_healthy
-
-volumes:
-  mysql_data:

@@ -21,7 +21,6 @@
             <span>←</span>
             <span>กลับหน้า Dashboard</span>
           </a>
-
           <div class="stats-title-row">
             <div class="stats-title-icon">📊</div>
             <div>
@@ -32,7 +31,6 @@
             </div>
           </div>
         </div>
-
         <div class="stats-total-box">
           <div class="stats-total-icon">👁</div>
           <div>
@@ -43,7 +41,6 @@
           </div>
         </div>
       </div>
-
       <div class="stats-card">
         <div class="stats-section-header">
           <div class="stats-section-title-wrap">
@@ -57,7 +54,6 @@
             {{ visits|length }} รายการ
           </div>
         </div>
-
         {% if visits %}
         <div class="stats-table-wrapper">
           <table class="stats-table">
@@ -75,7 +71,7 @@
             </thead>
             <tbody>
               {% for visit in visits %}
-              <tr>
+              <tr data-visit-id="{{ visit['id'] }}">
                 <td class="stats-row-number">{{ loop.index }}</td>
                 <td>
                   <span class="stats-time"
@@ -96,10 +92,14 @@
                   {% if visit["latitude"] is not none and visit["longitude"] is
                   not none %}
                   <div class="stats-location">
-                    <div class="stats-location-status success">
-                      <span>●</span> ได้รับพิกัด
+                    <div
+                      class="stats-location-status {{ 'success' if visit['is_sharing'] else 'denied' }}"
+                      data-live-status
+                    >
+                      <span>●</span> {{ 'กำลังแชร์ตำแหน่ง' if
+                      visit['is_sharing'] else 'ได้รับพิกัด' }}
                     </div>
-                    <div class="stats-coordinates">
+                    <div class="stats-coordinates" data-live-coordinates>
                       {{ "%.5f"|format(visit["latitude"]) }}, {{
                       "%.5f"|format(visit["longitude"]) }} {% if
                       visit["accuracy_meters"] is not none %}
@@ -121,6 +121,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     class="stats-map-btn"
+                    data-live-map
                     >📍 เปิดบน Google Maps</a
                   >
                   {% else %}
