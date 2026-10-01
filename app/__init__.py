@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .database import init_db
 from .routes import router
@@ -17,6 +18,10 @@ def create_app():
         static_url_path="/static",
     )
     flask_app.secret_key = os.environ.get("FLASK_SECRET_KEY", "local-development-secret")
+    flask_app.wsgi_app = ProxyFix(
+        flask_app.wsgi_app,
+        x_for=int(os.environ.get("TRUSTED_PROXY_COUNT", "0")),
+    )
     flask_app.register_blueprint(router)
     init_db()
     return flask_app

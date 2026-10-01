@@ -25,13 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   const deleteForms = document.querySelectorAll(".delete-form");
-
   deleteForms.forEach(function (form) {
     form.addEventListener("submit", function (event) {
-      const confirmed = confirm(
-        "คุณแน่ใจหรือไม่ว่าต้องการลบลิงก์นี้?\n\nข้อมูลสถิติทั้งหมดของลิงก์นี้จะถูกลบด้วย"
-      );
-
+      const confirmed = confirm("คุณแน่ใจหรือไม่ว่าต้องการลบลิงก์นี้?\n\nข้อมูลสถิติทั้งหมดของลิงก์นี้จะถูกลบด้วย");
       if (!confirmed) {
         event.preventDefault();
       }
@@ -39,19 +35,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   let refreshCheckRunning = false;
-
   async function checkForUpdates() {
     if (refreshCheckRunning || document.hidden) {
       return;
     }
-
     const statsCount = document.getElementById("stats-visit-count");
     const dashboardLinkCount = document.getElementById("dashboard-link-count");
     const dashboardVisitCount = document.getElementById("dashboard-visit-count");
     const query = statsCount
       ? `?link_id=${encodeURIComponent(window.adminStatsLinkId)}`
       : "";
-
     refreshCheckRunning = true;
     try {
       const response = await fetch(`/api/admin/updates${query}`, {

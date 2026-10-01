@@ -10,3 +10,5 @@ services:
     envVars:
       - key: FLASK_SECRET_KEY
         generateValue: true
+      - key: TRUSTED_PROXY_COUNT
+        value: "1"
