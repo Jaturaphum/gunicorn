@@ -22,11 +22,11 @@ services:
 
   - type: web
     name: session-tracker
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    runtime: python
     region: singapore
     plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT main:app
     healthCheckPath: /
     envVars:
       - key: MYSQL_HOST

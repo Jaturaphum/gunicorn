@@ -30,3 +30,7 @@ The MySQL service requires a paid plan and a persistent disk; Render's filesyste
 The phpMyAdmin service is public, so use a strong MYSQL_PASSWORD and restrict its IP access in Render when your plan supports it.
 For SQLite data that exists on your PC, the Docker Compose migration command above does not move it to Render automatically.
 Back up MySQL with mysqldump rather than restoring a Render disk snapshot.
+
+If the web service was created separately instead of through the Blueprint, set MYSQL_HOST to the private host
+shown by session-mysql, MYSQL_PORT to 3306, MYSQL_DATABASE to tracking, MYSQL_USER to tracking_app, and
+MYSQL_PASSWORD to the same secret configured on session-mysql in the web service's Environment settings.

@@ -8,6 +8,15 @@ import mysql.connector
 from flask import jsonify, redirect, request, url_for
 
 def get_db_connection():
+    required_settings = ("MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE")
+    missing_settings = [setting for setting in required_settings if not os.environ.get(setting)]
+    if missing_settings:
+        missing_names = ", ".join(missing_settings)
+        raise RuntimeError(
+            f"Missing MySQL environment variables: {missing_names}. "
+            "Set them in the Render web service Environment settings."
+        )
+
     return mysql.connector.connect(
         host=os.environ.get("MYSQL_HOST", "127.0.0.1"),
         port=int(os.environ.get("MYSQL_PORT", "3306")),
