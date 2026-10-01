@@ -6,6 +6,11 @@ python -m pip install -r requirements.txt
 
 python main.py
 
+Local database
+When no MYSQL_* environment variables are set, the app uses the existing database.db SQLite file.
+Run python main.py without configuring MySQL to use the local database.
+On Render, set all MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, and MYSQL_DATABASE values to use MySQL.
+
 MySQL and phpMyAdmin
 1. Copy .env.example to .env and replace all example secrets with long random values.
 2. Start MySQL: docker compose up -d db
