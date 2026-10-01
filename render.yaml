@@ -1,0 +1,73 @@
+services:
+  - type: pserv
+    name: session-mysql
+    runtime: image
+    image:
+      url: docker.io/library/mysql:8.4
+    region: singapore
+    plan: 0.5c-512mb
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: tracking
+      - key: MYSQL_USER
+        value: tracking_app
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_ROOT_PASSWORD
+        sync: false
+
+  - type: web
+    name: session-tracker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: singapore
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: MYSQL_HOST
+        fromService:
+          type: pserv
+          name: session-mysql
+          property: host
+      - key: MYSQL_PORT
+        value: "3306"
+      - key: MYSQL_DATABASE
+        fromService:
+          type: pserv
+          name: session-mysql
+          envVarKey: MYSQL_DATABASE
+      - key: MYSQL_USER
+        fromService:
+          type: pserv
+          name: session-mysql
+          envVarKey: MYSQL_USER
+      - key: MYSQL_PASSWORD
+        fromService:
+          type: pserv
+          name: session-mysql
+          envVarKey: MYSQL_PASSWORD
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+
+  - type: web
+    name: session-phpmyadmin
+    runtime: image
+    image:
+      url: docker.io/phpmyadmin:5.2.3-apache
+    region: singapore
+    plan: free
+    envVars:
+      - key: PMA_HOST
+        fromService:
+          type: pserv
+          name: session-mysql
+          property: host
+      - key: PMA_PORT
+        value: "3306"
+      - key: PMA_ARBITRARY
+        value: "0"
